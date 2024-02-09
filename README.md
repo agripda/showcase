@@ -40,29 +40,21 @@ The DataQC library provides data practitioners and business users with a suite o
 [![Solution Diagram - to be inserted](docs/solution_diagram.png)](docs/solution_diagram.png)
 
 ## Introduction: Key Objectives
-"Is it okay to go live?: When preparing to send data to the real world, it is crucial to ensure its quality and reliability. This report outlines the essential checkpoints to verify data integrity before its release.
+When preparing to send data to the real world, it is crucial to ensure its quality and reliability ("Is it okay to go live?). This report outlines the essential checkpoints to verify data integrity before its release.
 
 ### Checkpoint 1: Value Check (VCheck)
-"Are the values in the dataset valid and reliable?": The first checkpoint involves validating the values within the data records. The DataQC library offers the "Value Check" feature, which allows users to apply specific validation rules to ensure data meets all requirements. This feature also helps identify and address any outliers within the data.
+The first checkpoint involves validating the values within the data records ("Are the values in the dataset valid and reliable?"). The DataQC library offers the "Value Check" feature, which allows users to apply specific validation rules to ensure data meets all requirements. This feature also helps identify and address any outliers within the data.
 
 ### Checkpoint 2: Delta Check (DCheck)
-"What's the delta between current and previous datasets?": The second checkpoint focuses on capturing the differences between current and previous datasets. The DataQC library includes the "Delta Check" feature, which compares data points and identifies any changes that fall outside of the normal distribution and standard deviation. This enables users to identify discrepancies in the data effectively.
+The second checkpoint focuses on capturing the differences between current and previous datasets ("What's the delta between current and previous datasets?"). The DataQC library includes the "Delta Check" feature, which compares data points and identifies any changes that fall outside of the normal distribution and standard deviation. This enables users to identify discrepancies in the data effectively.
 
 ### Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)
-"What's the statistical breakdown and what's the trend from historical viewpoint?": The third checkpoint involves conducting macro-level analysis of the data. The DataQC library provides the "Vertical Reconciliation" (VRecon) and "Horizontal Reconciliation" (HRecon) features. These features enable users to analyze data trends, identify inconsistencies within datasets, and uncover potential anomalies. This, in turn, allows for informed decision-making based on historical data trends.
+The third checkpoint involves conducting macro-level analysis of the data ("What's the statistical breakdown and what's the trend from historical viewpoint?"). The DataQC library provides the "Vertical Reconciliation" (VRecon) and "Horizontal Reconciliation" (HRecon) features. These features enable users to analyze data trends, identify inconsistencies within datasets, and uncover potential anomalies. This, in turn, allows for informed decision-making based on historical data trends.
 
 
 ## Key Capabilities and Benefits
 The DataQC library provides key capabilities that empower users to validate specific data points, reconcile data from different sources, analyze data trends, and gain comprehensive insights into data quality. <br> 
 The benefits of using the DataQC library include improved data quality, increased efficiency through automation, and stronger business impact through optimized operations, increased revenue, and risk mitigation.
-
-## Get started:
-The DataQC library offers user-friendly functions like VRecon(), HRecon(), DProfile(), and vcheck() for seamless integration into your data analysis workflows. Start building trust in your data and unlock its full potential today.
-
-## Project philosophy
-- The Beauty of Code: Embraces the elegance and efficiency of well-written code.
-- Metadata-Driven Reflecting Business Rules: Leverages metadata to dynamically apply business rules, ensuring consistent data handling.
-- Once-Source Multi-Use (OSMU): Serves multiple purposes within a single, unified solution, maximizing resource utilization.
 
 ## 1. ValueCheck
 VCheck enable to check the value in the specific column using **vcheck()** in **dataqc** library: <br>
