@@ -8,8 +8,6 @@
     * [Checkpoint 2: Delta Check (DCheck)](#checkpoint-2-delta-check-dcheck)
     * [Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)](#checkpoint-3-vertical-and-horizontal-reconciliation-vrecon-hrecon)
   * [Key Capabilities and Benefits](#key-capabilities-and-benefits)
-  * [Get started:](#get-started)
-  * [Project philosophy](#project-philosophy)
   * [1. ValueCheck](#1-valuecheck)
     * [Basic](#basic)
     * [Validation Type: RANGE](#validation-type-range)
