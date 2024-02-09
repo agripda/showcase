@@ -8,6 +8,8 @@
     * [Checkpoint 2: Delta Check (DCheck)](#checkpoint-2-delta-check-dcheck)
     * [Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)](#checkpoint-3-vertical-and-horizontal-reconciliation-vrecon-hrecon)
   * [Key Capabilities and Benefits](#key-capabilities-and-benefits)
+  * [Get started:](#get-started)
+  * [Project philosophy](#project-philosophy)
   * [1. ValueCheck](#1-valuecheck)
     * [Basic](#basic)
     * [Validation Type: RANGE](#validation-type-range)
@@ -38,21 +40,22 @@ The DataQC library provides data practitioners and business users with a suite o
 [![Solution Diagram - to be inserted](docs/solution_diagram.png)](docs/solution_diagram.png)
 
 ## Introduction: Key Objectives
-When preparing to send data to the real world, it is crucial to ensure its quality and reliability ("Is it okay to go live?). This report outlines the essential checkpoints to verify data integrity before its release.
+"Is it okay to go live?: When preparing to send data to the real world, it is crucial to ensure its quality and reliability. This report outlines the essential checkpoints to verify data integrity before its release.
 
 ### Checkpoint 1: Value Check (VCheck)
-The first checkpoint involves validating the values within the data records ("Are the values in the dataset valid and reliable?"). The DataQC library offers the "Value Check" feature, which allows users to apply specific validation rules to ensure data meets all requirements. This feature also helps identify and address any outliers within the data.
+"Are the values in the dataset valid and reliable?": The first checkpoint involves validating the values within the data records. The DataQC library offers the "Value Check" feature, which allows users to apply specific validation rules to ensure data meets all requirements. This feature also helps identify and address any outliers within the data.
 
 ### Checkpoint 2: Delta Check (DCheck)
-The second checkpoint focuses on capturing the differences between current and previous datasets ("What's the delta between current and previous datasets?"). The DataQC library includes the "Delta Check" feature, which compares data points and identifies any changes that fall outside of the normal distribution and standard deviation. This enables users to identify discrepancies in the data effectively.
+"What's the delta between current and previous datasets?": The second checkpoint focuses on capturing the differences between current and previous datasets. The DataQC library includes the "Delta Check" feature, which compares data points and identifies any changes that fall outside of the normal distribution and standard deviation. This enables users to identify discrepancies in the data effectively.
 
 ### Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)
-The third checkpoint involves conducting macro-level analysis of the data ("What's the statistical breakdown and what's the trend from historical viewpoint?"). The DataQC library provides the "Vertical Reconciliation" (VRecon) and "Horizontal Reconciliation" (HRecon) features. These features enable users to analyze data trends, identify inconsistencies within datasets, and uncover potential anomalies. This, in turn, allows for informed decision-making based on historical data trends.
+"What's the statistical breakdown and what's the trend from historical viewpoint?": The third checkpoint involves conducting macro-level analysis of the data. The DataQC library provides the "Vertical Reconciliation" (VRecon) and "Horizontal Reconciliation" (HRecon) features. These features enable users to analyze data trends, identify inconsistencies within datasets, and uncover potential anomalies. This, in turn, allows for informed decision-making based on historical data trends.
 
 
 ## Key Capabilities and Benefits
 The DataQC library provides key capabilities that empower users to validate specific data points, reconcile data from different sources, analyze data trends, and gain comprehensive insights into data quality. <br> 
 The benefits of using the DataQC library include improved data quality, increased efficiency through automation, and stronger business impact through optimized operations, increased revenue, and risk mitigation.
+
 
 ## 1. ValueCheck
 VCheck enable to check the value in the specific column using **vcheck()** in **dataqc** library: <br>
@@ -386,7 +389,6 @@ columnMatcher.run_csv(source_filepath=source_filepath,
     column_to_join=column_to_join, 
     column_to_sort=column_to_sort,
     delimeter=delimeter)
-
 ```
 #### Input Data: stock_price.csv 
 ```
@@ -398,7 +400,13 @@ target/world-indices-yahoo-20230608.csv
 
 ## 3. VRecon and Lineage 
 Vertical Reconciliation: "Comparing corresponding data points across different sources or systems. It's essentially a vertical comparison, as it's looking at the same data points across different rows (hence, "vertical") of the specific data."
+```commandline
+python hrecon.py --function='VerticalRecon' --source_filepath=None --target_filepath=None --output_filepath=None)
 
+# example
+vRecon = VerticalRecon()
+vRecon.run()
+```
 
 ## 4. Usage: DProfile()
 Data profiling: "Performing a series of processes involves examining, analyzing, and summarizing data to gain a high-level understanding. This process helps uncover data quality issues, risks, and trends, providing critical insights that companies can use to their advantage
