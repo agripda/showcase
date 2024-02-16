@@ -384,11 +384,7 @@ python hrecon.py --function='ColumnMatcher' --source_filepath=None --target_file
 
 # example
 columnMatcher = ColumnMatcher()
-columnMatcher.run_csv(source_filepath=source_filepath, 
-    arget_filepath=target_filepath, 
-    column_to_join=column_to_join, 
-    column_to_sort=column_to_sort,
-    delimeter=delimeter)
+columnMatcher.run (source_filepath='temp/gminer_23.csv', target_filepath='temp/gminer_24.csv', columns_to_compare=['name', 'symbol'], column_to_sort='name', delimiter=","   
 ```
 #### Input Data: stock_price.csv 
 ```
