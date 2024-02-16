@@ -37,7 +37,7 @@
 ## Executive Summary
 The DataQC library provides data practitioners and business users with a suite of tools to ensure the accuracy and consistency of their data. These tools enable users to reconcile, analyze, and validate their data, ultimately leading to confident decision-making across projects and departments.
 
-[![Solution Diagram - to be inserted](docs/solution_diagram.png)](docs/solution_diagram.png)
+![img.png](docs/dataqc.png)
 
 ## Introduction: Key Objectives
 "Is it okay to go live?: When preparing to send data to the real world, it is crucial to ensure its quality and reliability. This report outlines the essential checkpoints to verify data integrity before its release.
@@ -60,7 +60,7 @@ The benefits of using the DataQC library include improved data quality, increase
 ## 1. ValueCheck
 VCheck enable to check the value in the specific column using **vcheck()** in **dataqc** library: <br>
 
-![img_4.png](docs/st_vcheck.png)
+![img.png](docs/value_check.png)
 
 ### Basic
 ```commandline
@@ -350,7 +350,7 @@ GCC432,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",F
 
 ## 2. DeltaCheck
 This feature allows users to compare two datasets (such as current and previous data) and detect any differences that deviate from the normal distribution and standard deviation. By leveraging this functionality, users can effectively identify discrepancies in their data.
-
+![img.png](docs/delta_check.png)
 ### DeltaCheck()
 perform comparison and profiling for multiple columns and rows
 
