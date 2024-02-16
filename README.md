@@ -355,15 +355,16 @@ This feature allows users to compare two datasets (such as current and previous 
 perform comparison and profiling for multiple columns and rows
 
 ```commandline
-python hrecon.py --function='DeltaCheck' --source_filepath=None --target_filepath=None --output_filepath=None --pattern=None)
+$ python delta_check.py --source_data_filepath = 'golf_cc_address1.csv' --target_data_filepath = 'golf_cc_address2.csv' --columns_to_compare ='['KEY', 'ADDRESS', 'STATE']', --key_to_join = 'KEY'
 
 # example
-deltaCheck = DeltaCheck(file_datapath=file_datapath, patterns=patterns)
-source_data = pd.read_csv('golf_cc_address1.csv')
-target_data = pd.read_csv('golf_cc_address2.csv')
-columns_to_compare = ['KEY', 'ADDRESS', 'STATE']
-key_to_join = 'KEY'
-deltaCheck.compare_multiple_columns(source=source_data, target=target_data, columns_to_compare=columns_to_compare, key_to_join=key_to_join)
+deltaCheck=DeltaCheck(source_data_filepath=source_data_filepath,
+                target_data_filepath=target_data_filepath,
+                data_source_type=data_source_type,
+                columns_to_compare=columns_to_compare,
+                key_to_join=key_to_join)
+all_mismatched, comparison_report = deltaCheck.main()
+print(comparison_report)
 ```
 
 #### Output 
@@ -380,11 +381,17 @@ GCC192,Cape Schanck Golf Course,Cape Schanck Golf Course,"130 Cape Schanck Rd, C
 ### ColumnMatcher()
 find different for same layouts between two data sets for single column
 ```commandline
-python hrecon.py --function='ColumnMatcher' --source_filepath=None --target_filepath=None --output_filepath=None --pattern=None)
+$ python column_matcher.py --source_data_filepath='input/gminer_24jan.csv' --target_data_filepath='input/gminer_24feb.csv'  --column_to_sort='symbol' --columns_to_compare='symbol,name,ma_signal'
+
 
 # example
-columnMatcher = ColumnMatcher()
-columnMatcher.run (source_filepath='temp/gminer_23.csv', target_filepath='temp/gminer_24.csv', columns_to_compare=['name', 'symbol'], column_to_sort='name', delimiter=","   
+columnMatcher = ColumnMatcher(source_data_filepath=source_data_filepath,
+                                  target_data_filepath=target_data_filepath,
+                                  columns_to_compare=columns_to_compare,
+                                  column_to_sort=column_to_sort,
+                                  data_source_type=data_source_type,
+                                  delimiter=delimiter,
+                                  output_filepath=output_filepath)   
 ```
 #### Input Data: stock_price.csv 
 ```
