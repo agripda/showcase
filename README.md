@@ -365,7 +365,8 @@ def my_udf(udf_input):
 
 #### Output
 ```
-GCC104,Royal Fremantle Golf Club,"271 Carrington St, Fremantle NSW 6160, Australia",True,"UDF Result: ('suggested:Fremantle WA 6160, Australia', True)",ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}
+KEY,COUNTRY_CLUB_NAME,ADDRESS,CHECKBIT,UDF0,VALIDATION_CRITERIA0
+GCC104,Royal Fremantle Golf Club,"271 Carrington St, Fremantle TBD 6160, Australia",True,"UDF Result: ('suggested:271 Carrington St, Beaconsfield WA 6162, Australia', True)",ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}
 GCC107,Lake Karrinyup Country Club,"400 Koala Rd, Karrinyup WA 6018, Australia",True,"UDF Result: ('suggested:Karrinyup WA 6018, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
 GCC116,North Sydney Golf Club,"259 Pacific Hwy, South Sydney NSW 2154, Australia",True,"UDF Result: ('suggested:259 Pacific Hwy, North Sydney NSW 2060, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
 ```
