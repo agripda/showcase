@@ -1,5 +1,3 @@
-.gitignore
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -16,8 +14,6 @@ build/
 .env.sh
 venv/
 ENV/
-
-Lib
 
 # IDE-specific files
 .vscode/
@@ -67,6 +63,4 @@ metadata/archive
 
 systems.yaml
 .Rproj.user
-
-Scripts/
 .gitignore
