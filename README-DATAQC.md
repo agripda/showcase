@@ -337,70 +337,14 @@ GCC432,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",F
 
 #### Validation Type: UDF
 ```
-{
-  "target_column": "ADDRESS",
+{ 
+  "target_column": "STATUS",
   "validation_type": "UDF",
   "validation_rule": [{
-      "udf": "udf/udf_tester_address.py"
+      "udf": "lib/my_udf.py"
   }]
 }
 ```
-
-
-####
-UDF sample (udf_tester_address.py)
-```
-def my_udf(udf_input):    
-    from address_engine import GoogleMaps, BingMaps, NominatimGeocoder, AusPost
-    CGoogleMaps = GoogleMaps(api_key=GOOGLE_MAPS_API_KEY, base_url=GOOGLE_MAPS_BASE_URL)
-    address = udf_input
-    suggestion_result_api, suggested_address_from_api, suggested_coordinates_from_api, place_id_from_api, address_components_from_api = CGoogleMaps.suggest_address(address)
-    
-    ret = f"suggested:{suggested_address_from_api}"    
-    print (ret)    
-    return ret
-```
-####
-
-
-#### Output
-```
-KEY,COUNTRY_CLUB_NAME,ADDRESS,CHECKBIT,UDF0,VALIDATION_CRITERIA0
-GCC104,Royal Fremantle Golf Club,"271 Carrington St, Fremantle TBD 6160, Australia",True,"UDF Result: ('suggested:271 Carrington St, Beaconsfield WA 6162, Australia', True)",ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}
-GCC107,Lake Karrinyup Country Club,"400 Koala Rd, Karrinyup WA 6018, Australia",True,"UDF Result: ('suggested:Karrinyup WA 6018, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
-GCC116,North Sydney Golf Club,"259 Pacific Hwy, South Sydney NSW 2154, Australia",True,"UDF Result: ('suggested:259 Pacific Hwy, North Sydney NSW 2060, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
-```
-
-UDF sample in R (udf_gminer.R)
-```
-my_udf <- function (udf_input, tagname=NULL){
-  symbol_in_portfolio <- "KS11|AORD"
-  udf_output <- udf_input %>%
-    dplyr::select (Date, Symbol, Close, RSI, MA_SIG, RSI_SIG, "MA Golden Cross"=MAGX, Return) %>%
-    dplyr::filter(Symbol != "APPL") %>%
-    dplyr::mutate(Prev = lag(Close, order_by = c(Symbol)),
-                  Next = lead(Close, order_by = c(Symbol)),
-                  Change = (Close - lag(Close, order_by = c(Symbol)))
-    ) %>%
-    dplyr::mutate(
-      Date = as.POSIXct.Date(Date),
-      MA_SIG = factor(MA_SIG, levels = c("Bullish", "Bearish", "No"), labels = c("Bullish", "Bearish", "Neural")),
-      RSI_SIG = dplyr::case_when (RSI_SIG == "RSI_Up" ~ "Bullish",
-                                  RSI_SIG == "RSI_Down" ~ "Bearish",
-                                  RSI_SIG == "No" ~ "Neural",
-                                  TRUE  ~ NA_character_),
-      Symbol = stringr::str_replace(Symbol, "[^[A-Za-z]]", ""),
-      Year = lubridate::year(Date),
-      Month = lubridate::month(Date),
-      Day = lubridate::day(Date),
-      "In-Portfolio" = stringr::str_extract(Symbol, symbol_in_portfolio)) %>%
-    dplyr::filter (between (map_dbl (Return, min), -10, 10)) %>%
-    dplyr::distinct(Date, Symbol, .keep_all = TRUE) %>%
-    arrange (Date, Symbol) 
-  return (udf_output)
-}
-```
-####
 
 
 
@@ -473,16 +417,12 @@ Data profiling: "Performing a series of processes involves examining, analyzing,
 
 
 ## Deployments Options
-- Streamlit/FastAPI/Flask Web Services
+- FastAPI/Flask Web Services
 - REST API services in Docker/Kubernetes container
 - Tibco Kafra Topics
+- Python functions in Azure/AWS
 - Python function in Snowflake
-- Python function in Azure/AWS
-- Python function in SQL Server
 
 ## Considerations
-- UDF in Java
-- Master metadata
-- Data visualization
-- Exception handling
+- to be updated 
 
