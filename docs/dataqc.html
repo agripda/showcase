@@ -1,91 +1,100 @@
-<h1>DataQC - Ensured Data Quality Check Library</h1>
+# DataQC - Data Quality Check Library
+
 <!-- TOC -->
-<ul>
-<li><a href="#dataqc---ensured-data-quality-check-library">DataQC - Ensured Data Quality Check Library</a></li>
-<li><a href="#executive-summary">Executive Summary</a></li>
-<li><a href="#introduction-key-objectives">Introduction: Key Objectives</a><ul>
-<li><a href="#checkpoint-1-value-check-vcheck">Checkpoint 1: Value Check (VCheck)</a></li>
-<li><a href="#checkpoint-2-delta-check-dcheck">Checkpoint 2: Delta Check (DCheck)</a></li>
-<li><a href="#checkpoint-3-vertical-and-horizontal-reconciliation-vrecon-hrecon">Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)</a></li>
-</ul>
-</li>
-<li><a href="#key-capabilities-and-benefits">Key Capabilities and Benefits</a></li>
-<li><a href="#get-started">Get started:</a></li>
-<li><a href="#project-philosophy">Project philosophy</a></li>
-<li><a href="#value-checker-vcheck">Value Checker (VCheck)</a><ul>
-<li><a href="#basic">Basic</a></li>
-<li><a href="#loading-data-sql-csv-excel-">Loading data: SQL, CSV, Excel</a></li>
-<li><a href="#input-data-stockpricecsv-">Input Data: stock_price.csv</a></li>
-<li><a href="#input-metadata-stockpricejson-">Input Metadata: stock_price.json</a></li>
-<li><a href="#validation-type-range">Validation Type: RANGE</a></li>
-<li><a href="#validation-type-threshold">Validation Type: THRESHOLD</a></li>
-<li><a href="#validation-type-tier">Validation Type: TIER</a></li>
-<li><a href="#validation-type-length">Validation Type:  LENGTH</a></li>
-<li><a href="#validation-type-enum">Validation Type: ENUM</a></li>
-<li><a href="#validation-type-datatype">Validation Type: DATA_TYPE</a></li>
-<li><a href="#validation-type-contain">Validation Type: CONTAIN</a></li>
-<li><a href="#validation-type-pattern">Validation Type: PATTERN</a></li>
-<li><a href="#validation-type-category">Validation Type: CATEGORY</a></li>
-<li><a href="#validation-type-email">Validation Type: EMAIL</a></li>
-<li><a href="#validation-type-unique">Validation Type: UNIQUE</a></li>
-<li><a href="#validation-type-udf">Validation Type: UDF</a></li>
-</ul>
-</li>
-<li><a href="#deltachecker">DeltaChecker</a><ul>
-<li><a href="#deltacheck">DeltaCheck()</a></li>
-<li><a href="#columnmatcher">ColumnMatcher()</a></li>
-</ul>
-</li>
-<li><a href="#vrecon-">VRecon</a></li>
-<li><a href="#usage-dprofile">Usage: DProfile()</a></li>
-<li><a href="#deployments-options">Deployments Options</a></li>
-<li><a href="#considerations">Considerations</a></li>
-</ul>
+* [DataQC - Ensured Data Quality Check Library](#dataqc---ensured-data-quality-check-library)
+  * [Executive Summary](#executive-summary)
+  * [Introduction: Key Objectives](#introduction-key-objectives)
+    * [Checkpoint 1: Value Check (VCheck)](#checkpoint-1-value-check-vcheck)
+    * [Checkpoint 2: Delta Check (DCheck)](#checkpoint-2-delta-check-dcheck)
+    * [Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)](#checkpoint-3-vertical-and-horizontal-reconciliation-vrecon-hrecon)
+  * [Key Capabilities and Benefits](#key-capabilities-and-benefits)
+  * [1. ValueCheck](#1-valuecheck)
+    * [Basic](#basic)
+      * [Input Data: stock_price.csv](#input-data-stockpricecsv-)
+      * [Input Metadata: stock_price.json](#input-metadata-stockpricejson-)
+    * [Validation Type: RANGE](#validation-type-range)
+    * [Validation Type: THRESHOLD](#validation-type-threshold)
+    * [Validation Type: TIER](#validation-type-tier)
+    * [Validation Type:  LENGTH](#validation-type-length)
+    * [Validation Type: ENUM](#validation-type-enum)
+    * [Validation Type: DATA_TYPE](#validation-type-datatype)
+    * [Validation Type: CONTAIN](#validation-type-contain)
+    * [Validation Type: PATTERN](#validation-type-pattern)
+    * [Validation Type: CATEGORY](#validation-type-category)
+    * [Validation Type: EMAIL](#validation-type-email)
+    * [Validation Type: UNIQUE](#validation-type-unique)
+    * [Validation Type: UDF](#validation-type-udf)
+  * [2. DeltaCheck](#2-deltacheck)
+    * [DeltaCheck()](#deltacheck)
+    * [ColumnMatcher()](#columnmatcher)
+  * [3. VRecon and Lineage](#3-vrecon-and-lineage-)
+  * [4. Usage: DProfile()](#4-usage-dprofile)
+  * [Deployments Options](#deployments-options)
+  * [Considerations](#considerations)
+  * [Appendix](#appendix)
+    * [Key-Only-Result (Excluse all columns except Key column)](#key-only-result-excluse-all-columns-except-key-column)
+      * [Input with key_to_split arguments (e.g. --key_to_split='DATE, SYMBOL' )](#input-with-keytosplit-arguments-eg---keytosplitdate-symbol-)
+      * [Output: Key and results only (the rest columns are excluded)](#output-key-and-results-only-the-rest-columns-are-excluded)
+    * [Call in R](#call-in-r)
+      * [ValueCheck](#valuecheck)
+      * [DeltaCheck](#deltacheck-1)
 <!-- TOC -->
 
-<h2>Executive Summary</h2>
-<p>The DataQC library provides data practitioners and business users with a suite of tools to ensure the accuracy and consistency of their data. These tools enable users to reconcile, analyze, and validate their data, ultimately leading to confident decision-making across projects and departments.</p>
-<p><a href="docs/solution_diagram.png"><img alt="Solution Diagram - to be inserted" src="docs/solution_diagram.png" /></a></p>
-<h2>Introduction: Key Objectives</h2>
-<p>"Is it okay to go live?: When preparing to send data to the real world, it is crucial to ensure its quality and reliability. This report outlines the essential checkpoints to verify data integrity before its release.</p>
-<h3>Checkpoint 1: Value Check (VCheck)</h3>
-<p>"Are the values in the dataset valid and reliable?": The first checkpoint involves validating the values within the data records. The DataQC library offers the "Value Check" feature, which allows users to apply specific validation rules to ensure data meets all requirements. This feature also helps identify and address any outliers within the data.</p>
-<h3>Checkpoint 2: Delta Check (DCheck)</h3>
-<p>"What's the delta between current and previous datasets?": The second checkpoint focuses on capturing the differences between current and previous datasets. The DataQC library includes the "Delta Check" feature, which compares data points and identifies any changes that fall outside of the normal distribution and standard deviation. This enables users to identify discrepancies in the data effectively.</p>
-<h3>Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)</h3>
-<p>"What's the statistical breakdown and what's the trend from historical viewpoint?": The third checkpoint involves conducting macro-level analysis of the data. The DataQC library provides the "Vertical Reconciliation" (VRecon) and "Horizontal Reconciliation" (HRecon) features. These features enable users to analyze data trends, identify inconsistencies within datasets, and uncover potential anomalies. This, in turn, allows for informed decision-making based on historical data trends.</p>
-<h2>Key Capabilities and Benefits</h2>
-<p>The DataQC library provides key capabilities that empower users to validate specific data points, reconcile data from different sources, analyze data trends, and gain comprehensive insights into data quality. <br> 
-The benefits of using the DataQC library include improved data quality, increased efficiency through automation, and stronger business impact through optimized operations, increased revenue, and risk mitigation.</p>
-<h2>Get started:</h2>
-<p>The DataQC library offers user-friendly functions like VRecon(), HRecon(), DProfile(), and vcheck() for seamless integration into your data analysis workflows. Start building trust in your data and unlock its full potential today.</p>
-<h2>Project philosophy</h2>
-<ul>
-<li>The Beauty of Code: Embraces the elegance and efficiency of well-written code.</li>
-<li>Metadata-Driven Reflecting Business Rules: Leverages metadata to dynamically apply business rules, ensuring consistent data handling.</li>
-<li>Once-Source Multi-Use (OSMU): Serves multiple purposes within a single, unified solution, maximizing resource utilization.</li>
-</ul>
-<h2>Value Checker (VCheck)</h2>
-<p>VCheck enable to check the value in the specific column using <strong>vcheck()</strong> in <strong>dataqc</strong> library: <br></p>
-<p><img alt="img_4.png" src="docs/st_vcheck.png" /></p>
-<h3>Basic</h3>
-<p><code>commandline
-python dataqc.py --function='vcheck'  --data='data_source' --metadata='/input/metadata_source.json'</code></p>
-<h4>Loading data: SQL, CSV, Excel</h4>
-<p>```</p>
-<h1>CSV</h1>
-<p>data = pd.read_csv('input/stock_price.csv', delimiter=",", nrows=None)</p>
-<h1>SQL</h1>
-<p>data = get_data_from_database(sql_stmt='select * from stock_prices')
-```</p>
-<h4>Input Data: stock_price.csv</h4>
-<p><code>SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO
+
+## Executive Summary
+The DataQC library provides data practitioners and business users with a suite of tools to ensure the accuracy and consistency of their data. These tools enable users to reconcile, analyze, and validate their data, ultimately leading to confident decision-making across projects and departments.
+
+![img.png](docs/dataqc.png)
+
+## Introduction: Key Objectives
+"Is it okay to go live?: When preparing to send data to the real world, it is crucial to ensure its quality and reliability. This report outlines the essential checkpoints to verify data integrity before its release.
+
+### Checkpoint 1: Value Check (VCheck)
+"Are the values in the dataset valid and reliable?": The first checkpoint involves validating the values within the data records. The DataQC library offers the "Value Check" feature, which allows users to apply specific validation rules to ensure data meets all requirements. This feature also helps identify and address any outliers within the data.
+
+### Checkpoint 2: Delta Check (DCheck)
+"What's the delta between current and previous datasets?": The second checkpoint focuses on capturing the differences between current and previous datasets. The DataQC library includes the "Delta Check" feature, which compares data points and identifies any changes that fall outside of the normal distribution and standard deviation. This enables users to identify discrepancies in the data effectively.
+
+### Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)
+"What's the statistical breakdown and what's the trend from historical viewpoint?": The third checkpoint involves conducting macro-level analysis of the data. The DataQC library provides the "Vertical Reconciliation" (VRecon) and "Horizontal Reconciliation" (HRecon) features. These features enable users to analyze data trends, identify inconsistencies within datasets, and uncover potential anomalies. This, in turn, allows for informed decision-making based on historical data trends.
+
+
+## Key Capabilities and Benefits
+The DataQC library provides key capabilities that empower users to validate specific data points, reconcile data from different sources, analyze data trends, and gain comprehensive insights into data quality. <br> 
+The benefits of using the DataQC library include improved data quality, increased efficiency through automation, and stronger business impact through optimized operations, increased revenue, and risk mitigation.
+
+
+## 1. ValueCheck
+VCheck enable to check the value in the specific column using **vcheck()** in **dataqc** library: <br>
+
+![img.png](docs/value_check.png)
+
+### Basic
+```commandline
+python dataqc.py --function='vcheck'  --data='data_source' --metadata='/input/metadata_source.json'
+
+# Sample: CSV
+valueCheck = ValueCheck(data_filepath="stock_price.csv", metadata_filepath="stock_price.json", data_source_type="csv")
+print (valueCheck.run())
+
+# Sample: SQL:
+valueCheck = ValueCheck(sql_stmt="select * from stock_prices", connection_string="ODBC:connection_string", metadata_filepath="golf_cc_address.json", data_source_type="sql")
+# valueCheck.get_data_from_database(sql_stmt='select * from stock_prices')
+print (valueCheck.run())
+```
+
+#### Input Data: stock_price.csv 
+```
+SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO
 JPM,6/02/2024,130,7000,ACTIVE
 GOOG,6/02/2024,,3000,ACTIVE
 MSFT,6/02/2024,250,20000,PENDING
-GS,6/02/2024,202,20340,CANCELLED</code></p>
-<h4>Input Metadata: stock_price.json</h4>
-<p><code>[  
+GS,6/02/2024,202,20340,CANCELLED
+```
+
+#### Input Metadata: stock_price.json 
+```
+[  
   {
     "include": "YES",
     "target_column": "CLOSING_PRICE",
@@ -95,10 +104,14 @@ GS,6/02/2024,202,20340,CANCELLED</code></p>
         "low": 150,
         "max": 250
       }]
-  }]</code></p>
-<h3>Validation Type: RANGE</h3>
-<p>This validation type checks if the values in the target column ("CLOSING_PRICE" ) falls within the specified range (low: 150 and max: 250) .
-<code>[  
+  }]
+```
+
+
+### Validation Type: RANGE
+This validation type checks if the values in the target column ("CLOSING_PRICE" ) falls within the specified range (low: 150 and max: 250) .
+```
+[  
   {
     "target_column": "CLOSING_PRICE",
     "validation_type": "RANGE",
@@ -107,16 +120,22 @@ GS,6/02/2024,202,20340,CANCELLED</code></p>
         "low": 150,
         "max": 250
       }]
-  }]</code></p>
-<h4>Output: output.csv</h4>
-<p><code>SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,RANGE0,VALIDATION_CRITERIA0
+  }]
+```
+
+#### Output: output.csv
+```
+SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,RANGE0,VALIDATION_CRITERIA0
 JPM,6/02/2024,130.0,7000,ACTIVE,Out of range,"CLOSING_PRICE | RANGE | {'low': 150, 'max': 250}"
 GOOG,6/02/2024,,3000,ACTIVE,Validation type [RANGE] is not supported.,"[""CLOSING_PRICE | RANGE | {'low': 150, 'max': 250}""]"
 MSFT,6/02/2024,250.0,20000,PENDING,Within Range,"[""CLOSING_PRICE | RANGE | {'low': 150, 'max': 250}""]"
-GS,6/02/2024,202.0,20340,CANCELLED,Within Range,"[""CLOSING_PRICE | RANGE | {'low': 150, 'max': 250}""]"</code></p>
-<h3>Validation Type: THRESHOLD</h3>
-<p>This validation type checks if the values in a target column falls within the specified threshold range.
-<code>{
+GS,6/02/2024,202.0,20340,CANCELLED,Within Range,"[""CLOSING_PRICE | RANGE | {'low': 150, 'max': 250}""]"
+```
+
+### Validation Type: THRESHOLD
+This validation type checks if the values in a target column falls within the specified threshold range.
+```
+{
     "target_column": "VOLUME",
     "validation_type": "THRESHOLD",
     "validation_rule": [
@@ -124,16 +143,21 @@ GS,6/02/2024,202.0,20340,CANCELLED,Within Range,"[""CLOSING_PRICE | RANGE | {'lo
         "low": 5000,
         "max": 15000
       }]
- }</code></p>
-<h4>Output</h4>
-<p><code>SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,THRESHOLD0,VALIDATION_CRITERIA0
+ }
+```
+
+#### Output
+```
+SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,THRESHOLD0,VALIDATION_CRITERIA0
 JPM,6/02/2024,130.0,7000,ACTIVE,Between Low and Max,"VOLUME | THRESHOLD | {'low': 5000, 'max': 15000}"
 GOOG,6/02/2024,,3000,ACTIVE,Below Low,"[""VOLUME | THRESHOLD | {'low': 5000, 'max': 15000}""]"
 MSFT,6/02/2024,250.0,20000,PENDING,Above Max,"[""VOLUME | THRESHOLD | {'low': 5000, 'max': 15000}""]"
-GS,6/02/2024,202.0,20340,CANCELLED,Above Max,"[""VOLUME | THRESHOLD | {'low': 5000, 'max': 15000}""]"</code></p>
-<h3>Validation Type: TIER</h3>
-<p>This validation type checks if the values in a target column fall within the specified tiered ranges.
-<code>{
+GS,6/02/2024,202.0,20340,CANCELLED,Above Max,"[""VOLUME | THRESHOLD | {'low': 5000, 'max': 15000}""]"
+```
+### Validation Type: TIER
+This validation type checks if the values in a target column fall within the specified tiered ranges.
+```
+{
   "target_column": "PREDICTION",
   "validation_type": "TIER",
   "validation_rule": [
@@ -149,17 +173,22 @@ GS,6/02/2024,202.0,20340,CANCELLED,Above Max,"[""VOLUME | THRESHOLD | {'low': 50
       "tier_8": 90,
       "tier_9": 100
     }]
-}</code></p>
-<h4>Output</h4>
-<p><code>DATE,SYMBOL,NAME,CLOSE,CHANGE,RANGE,CLOSE_TO_MAX,CLOSE_TO_MIN,VOLUME,ADJUSTED,PREDICTION,MA_SIGNAL,MA_SIGNAL_GOLDEN_CROSS,RSI_SIGNAL,RSI,MA_10,MA_60,MA_100,MA_200,DIST_60,DIST_100,DIST_200,MARKET_CAP,DURATION,PROCESSED_TIME,TIER0,VALIDATION_CRITERIA0
+}
+```
+#### Output
+```
+DATE,SYMBOL,NAME,CLOSE,CHANGE,RANGE,CLOSE_TO_MAX,CLOSE_TO_MIN,VOLUME,ADJUSTED,PREDICTION,MA_SIGNAL,MA_SIGNAL_GOLDEN_CROSS,RSI_SIGNAL,RSI,MA_10,MA_60,MA_100,MA_200,DIST_60,DIST_100,DIST_200,MARKET_CAP,DURATION,PROCESSED_TIME,TIER0,VALIDATION_CRITERIA0
 27/01/2022,LYC.AX,Lynas Rare EARTHS Ltd,8.99,-3.020496224, 4.8-11.2,2.25,-4.21,6445664,8.99,59.08836094,Neutral,GX10,RSI_Down,10.08370267,10.508,9.248833333,8.3419,7.21345,-2.798551169,7.769213249,24.62829853,x57946519.36,2021-01-27-2022-01-27,20220100000000.0,Tier4,"PREDICTION | TIER | {'tier_0': 10, 'tier_1': 20, 'tier_2': 30, 'tier_3': 40, 'tier_4': 60, 'tier_5': 60, 'tier_6': 70, 'tier_7': 80, 'tier_8': 90, 'tier_9': 100}"
 27/01/2022,PLS.AX,TBD,3.135,-3.538461538,0.9-3.9,0.725,-2.205,30815191,3.135,45.20416332,Bullish,GX10,RSI_Down,18.9480449,3.5985,2.84325,2.5449,2.0537,10.26114482,23.18755157,52.65131227,y96605623.79,2021-01-27-2022-01-27,20220100000000.0,Tier4,"[""PREDICTION | TIER | {'tier_0': 10, 'tier_1': 20, 'tier_2': 30, 'tier_3': 40, 'tier_4': 60, 'tier_5': 60, 'tier_6': 70, 'tier_7': 80, 'tier_8': 90, 'tier_9': 100}""]"
 27/01/2022,TLX.AX,Telix Pharmaceuticals Limited,6.48,-2.114803625,3.6-8.7,2.19,-2.92,1258011,6.48,60.87154952,Neutral,GX10,RSI_Down,9.941097085,7.858,7.424333333,6.9175,6.0323,-12.71943609,-6.324539212,7.421713111,8151911.28,2021-01-27-2022-01-27,20220100000000.0,Tier6,"[""PREDICTION | TIER | {'tier_0': 10, 'tier_1': 20, 'tier_2': 30, 'tier_3': 40, 'tier_4': 60, 'tier_5': 60, 'tier_6': 70, 'tier_7': 80, 'tier_8': 90, 'tier_9': 100}""]"
 27/01/2022,VESG.AX,Vanguard Investments Australia Ltd,71.5,-1.106504795,60.8-79.3,7.769997,-10.68,14419,71.5,32.55256386,Neutral,GX10,RSI_Down,6.994863344,74.471,77.16733323,75.87129999,72.97645016,-7.344212889,-5.761467104,-2.02318714,1030958.5,2021-01-27-2022-01-27,20220100000000.0,Tier3,"[""PREDICTION | TIER | {'tier_0': 10, 'tier_1': 20, 'tier_2': 30, 'tier_3': 40, 'tier_4': 60, 'tier_5': 60, 'tier_6': 70, 'tier_7': 80, 'tier_8': 90, 'tier_9': 100}""]"
-27/01/2022,WOW.AX,TBD,33.889999,-1.511191514,33.9-43.5,9.650002,0.0,2396357,33.889999,26.34801178,Bearish,Neutral,RSI_Down,16.34611505,35.0330002,38.37600022,38.85760014,39.41148143,-11.68960077,-12.78411719,-14.00983222,81212536.33,2021-01-27-2022-01-27,20220100000000.0,Tier2,"[""PREDICTION | TIER | {'tier_0': 10, 'tier_1': 20, 'tier_2': 30, 'tier_3': 40, 'tier_4': 60, 'tier_5': 60, 'tier_6': 70, 'tier_7': 80, 'tier_8': 90, 'tier_9': 100}""]"</code></p>
-<h3>Validation Type:  LENGTH</h3>
-<p>This validation type can be used to validate the length of a target column. It can ensure that the values meet a specific length requirement.
-<code>{
+27/01/2022,WOW.AX,TBD,33.889999,-1.511191514,33.9-43.5,9.650002,0.0,2396357,33.889999,26.34801178,Bearish,Neutral,RSI_Down,16.34611505,35.0330002,38.37600022,38.85760014,39.41148143,-11.68960077,-12.78411719,-14.00983222,81212536.33,2021-01-27-2022-01-27,20220100000000.0,Tier2,"[""PREDICTION | TIER | {'tier_0': 10, 'tier_1': 20, 'tier_2': 30, 'tier_3': 40, 'tier_4': 60, 'tier_5': 60, 'tier_6': 70, 'tier_7': 80, 'tier_8': 90, 'tier_9': 100}""]"
+```
+
+### Validation Type:  LENGTH
+This validation type can be used to validate the length of a target column. It can ensure that the values meet a specific length requirement.
+```
+{
   "target_column": "NAME",
   "validation_type": "LENGTH",
   "validation_rule": [
@@ -167,18 +196,25 @@ GS,6/02/2024,202.0,20340,CANCELLED,Above Max,"[""VOLUME | THRESHOLD | {'low': 50
       "min": 15,
       "max": 25
     }]
-}</code></p>
-<h4>Output</h4>
-<p><code>DATE,SYMBOL,NAME,CLOSE,CHANGE,RANGE,CLOSE_TO_MAX,CLOSE_TO_MIN,VOLUME,ADJUSTED,PREDICTION,MA_SIGNAL,MA_SIGNAL_GOLDEN_CROSS,RSI_SIGNAL,RSI,MA_10,MA_60,MA_100,MA_200,DIST_60,DIST_100,DIST_200,MARKET_CAP,DURATION,PROCESSED_TIME,LENGTH0,VALIDATION_CRITERIA0
+}
+```
+
+#### Output
+```
+DATE,SYMBOL,NAME,CLOSE,CHANGE,RANGE,CLOSE_TO_MAX,CLOSE_TO_MIN,VOLUME,ADJUSTED,PREDICTION,MA_SIGNAL,MA_SIGNAL_GOLDEN_CROSS,RSI_SIGNAL,RSI,MA_10,MA_60,MA_100,MA_200,DIST_60,DIST_100,DIST_200,MARKET_CAP,DURATION,PROCESSED_TIME,LENGTH0,VALIDATION_CRITERIA0
 27/01/2022,LYC.AX,Lynas Rare EARTHS Ltd,8.99,-3.020496224, 4.8-11.2,2.25,-4.21,6445664,8.99,59.08836094,Neutral,GX10,RSI_Down,10.08370267,10.508,9.248833333,8.3419,7.21345,-2.798551169,7.769213249,24.62829853,x57946519.36,2021-01-27-2022-01-27,20220100000000.0,Within Length,"NAME | LENGTH | {'min': 15, 'max': 25}"
 27/01/2022,PLS.AX,TBD,3.135,-3.538461538,0.9-3.9,0.725,-2.205,30815191,3.135,45.20416332,Bullish,GX10,RSI_Down,18.9480449,3.5985,2.84325,2.5449,2.0537,10.26114482,23.18755157,52.65131227,y96605623.79,2021-01-27-2022-01-27,20220100000000.0,Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
 27/01/2022,TLX.AX,Telix Pharmaceuticals Limited,6.48,-2.114803625,3.6-8.7,2.19,-2.92,1258011,6.48,60.87154952,Neutral,GX10,RSI_Down,9.941097085,7.858,7.424333333,6.9175,6.0323,-12.71943609,-6.324539212,7.421713111,8151911.28,2021-01-27-2022-01-27,20220100000000.0,Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
 27/01/2022,VESG.AX,Vanguard Investments Australia Ltd,71.5,-1.106504795,60.8-79.3,7.769997,-10.68,14419,71.5,32.55256386,Neutral,GX10,RSI_Down,6.994863344,74.471,77.16733323,75.87129999,72.97645016,-7.344212889,-5.761467104,-2.02318714,1030958.5,2021-01-27-2022-01-27,20220100000000.0,Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
-27/01/2022,WOW.AX,TBD,33.889999,-1.511191514,33.9-43.5,9.650002,0.0,2396357,33.889999,26.34801178,Bearish,Neutral,RSI_Down,16.34611505,35.0330002,38.37600022,38.85760014,39.41148143,-11.68960077,-12.78411719,-14.00983222,81212536.33,2021-01-27-2022-01-27,20220100000000.0,Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"</code></p>
-<h3>Validation Type: ENUM</h3>
-<p>This validation type (PORTFOLIIO) can be used to check if the values in the target column are within a predefined list ["ACTIVE", "INACTIVE", "PENDING"]. <br>
+27/01/2022,WOW.AX,TBD,33.889999,-1.511191514,33.9-43.5,9.650002,0.0,2396357,33.889999,26.34801178,Bearish,Neutral,RSI_Down,16.34611505,35.0330002,38.37600022,38.85760014,39.41148143,-11.68960077,-12.78411719,-14.00983222,81212536.33,2021-01-27-2022-01-27,20220100000000.0,Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
+```
+
+
+### Validation Type: ENUM
+This validation type (PORTFOLIIO) can be used to check if the values in the target column are within a predefined list ["ACTIVE", "INACTIVE", "PENDING"]. <br>
 It can ensure that the values are only selected from a specified set of choices.
-<code>{
+```
+{
     "target_column": "PORTFOLIIO",
     "validation_type": "ENUM",
     "validation_rule": [
@@ -186,16 +222,22 @@ It can ensure that the values are only selected from a specified set of choices.
         "allowed_values": ["ACTIVE", "INACTIVE", "PENDING"]
       }
     ]
-  }</code></p>
-<h4>Output</h4>
-<p><code>SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,ENUM0,VALIDATION_CRITERIA0
+  }
+```
+
+#### Output
+```
+SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,ENUM0,VALIDATION_CRITERIA0
 JPM,6/02/2024,130.0,7000,ACTIVE,Within allowed_values,"PORTFOLIIO | ENUM | {'allowed_values': ['ACTIVE', 'INACTIVE', 'PENDING']}"
 GOOG,6/02/2024,,3000,ACTIVE,Within allowed_values,"[""PORTFOLIIO | ENUM | {'allowed_values': ['ACTIVE', 'INACTIVE', 'PENDING']}""]"
 MSFT,6/02/2024,250.0,20000,PENDING,Within allowed_values,"[""PORTFOLIIO | ENUM | {'allowed_values': ['ACTIVE', 'INACTIVE', 'PENDING']}""]"
-GS,6/02/2024,202.0,20340,CANCELLED,Out of allowed_values,"[""PORTFOLIIO | ENUM | {'allowed_values': ['ACTIVE', 'INACTIVE', 'PENDING']}""]"</code></p>
-<h3>Validation Type: DATA_TYPE</h3>
-<p>This validation type ensures that the data in a target column (TRADING_DATE) is of the specified data type ('date') and format ('%d/%m/%Y').
-<code>{
+GS,6/02/2024,202.0,20340,CANCELLED,Out of allowed_values,"[""PORTFOLIIO | ENUM | {'allowed_values': ['ACTIVE', 'INACTIVE', 'PENDING']}""]"
+```
+
+### Validation Type: DATA_TYPE
+This validation type ensures that the data in a target column (TRADING_DATE) is of the specified data type ('date') and format ('%d/%m/%Y').
+```
+{
     "target_column": "TRADING_DATE",
     "validation_type": "DATA_TYPE",
     "validation_rule": [
@@ -203,41 +245,57 @@ GS,6/02/2024,202.0,20340,CANCELLED,Out of allowed_values,"[""PORTFOLIIO | ENUM |
         "data_type": "date",
         "data_format": "%d/%m/%Y"
       }]
-}</code></p>
-<h4>Output</h4>
-<p><code>SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,DATA_TYPET0,VALIDATION_CRITERIA0
+}
+```
+
+#### Output
+```
+SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,DATA_TYPET0,VALIDATION_CRITERIA0
 JPM,6/02/2024,130.0,7000,ACTIVE,Data type matched,"TRADING_DATE | DATA_TYPE | {'data_type': 'date', 'data_format': '%d/%m/%Y'}"
 GOOG,6/02/2024,,3000,ACTIVE,Data type matched,"[""TRADING_DATE | DATA_TYPE | {'data_type': 'date', 'data_format': '%d/%m/%Y'}""]"
 MSFT,6/02/2024,250.0,20000,PENDING,Data type matched,"[""TRADING_DATE | DATA_TYPE | {'data_type': 'date', 'data_format': '%d/%m/%Y'}""]"
-GS,6/02/2024,202.0,20340,CANCELLED,Data type matched,"[""TRADING_DATE | DATA_TYPE | {'data_type': 'date', 'data_format': '%d/%m/%Y'}""]"</code></p>
-<h3>Validation Type: CONTAIN</h3>
-<p>This validation type can be used to validate if the target column contains specific string. 
-<code>{
+GS,6/02/2024,202.0,20340,CANCELLED,Data type matched,"[""TRADING_DATE | DATA_TYPE | {'data_type': 'date', 'data_format': '%d/%m/%Y'}""]"
+```
+
+
+### Validation Type: CONTAIN
+This validation type can be used to validate if the target column contains specific string. 
+```
+{
     "target_column": "SYMBOL",
     "validation_type": "CONTAIN",
     "validation_rule": [
       {
         "keyword": "JP"
       }]
- }</code></p>
-<h4>Output</h4>
-<p><code>SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,CONTAIN0,VALIDATION_CRITERIA0
+ }
+```
+
+#### Output
+```
+SYMBOL,TRADING_DATE,CLOSING_PRICE,VOLUME,PORTFOLIIO,CONTAIN0,VALIDATION_CRITERIA0
 JPM,6/02/2024,130.0,7000,ACTIVE, Found,SYMBOL | CONTAIN | {'keyword': 'JP'}
 GOOG,6/02/2024,,3000,ACTIVE,Not found,"[""SYMBOL | CONTAIN | {'keyword': 'JP'}""]"
 MSFT,6/02/2024,250.0,20000,PENDING,Not found,"[""SYMBOL | CONTAIN | {'keyword': 'JP'}""]"
-GS,6/02/2024,202.0,20340,CANCELLED,Not found,"[""SYMBOL | CONTAIN | {'keyword': 'JP'}""]"</code></p>
-<h3>Validation Type: PATTERN</h3>
-<p>This validation type can be used to validate the format or pattern of data in a target column using REGEX. It can enforce a specific format for the values.
-<code>{
+GS,6/02/2024,202.0,20340,CANCELLED,Not found,"[""SYMBOL | CONTAIN | {'keyword': 'JP'}""]"
+```
+
+### Validation Type: PATTERN
+This validation type can be used to validate the format or pattern of data in a target column using REGEX. It can enforce a specific format for the values.
+```
+{
     "target_column": "SYMBOL",
     "validation_type": "PATTERN",
     "validation_rule": [
       {
         "pattern": "^[A-Za-z0-9]+$"
       }]
- }</code></p>
-<h3>Validation Type: CATEGORY</h3>
-<p><code>{ 
+ }
+```
+
+### Validation Type: CATEGORY
+```
+{ 
   "target_column": "CATEGORY",
   "validation_type": "IN",
   "validation_rule": [
@@ -245,9 +303,12 @@ GS,6/02/2024,202.0,20340,CANCELLED,Not found,"[""SYMBOL | CONTAIN | {'keyword': 
       "Category B",
       "Category C"
   ]
-}</code></p>
-<h3>Validation Type: EMAIL</h3>
-<p><code>{
+}
+```
+
+### Validation Type: EMAIL
+```
+{
   "target_column": "EMAIL",
   "validation_type": "EMAIL",
   "validation_rule": [
@@ -255,9 +316,12 @@ GS,6/02/2024,202.0,20340,CANCELLED,Not found,"[""SYMBOL | CONTAIN | {'keyword': 
       "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
     }
   ]
-}</code></p>
-<h4>Validation Type: UNIQUE</h4>
-<p><code>{  
+}
+```
+
+### Validation Type: UNIQUE
+```
+{  
   "target_column": "ADDRESS",
   "validation_type": "DUPLICATE",
   "validation_rule": [
@@ -265,73 +329,284 @@ GS,6/02/2024,202.0,20340,CANCELLED,Not found,"[""SYMBOL | CONTAIN | {'keyword': 
       "method": "count"
     }
   ]
-}</code></p>
-<h4>Output</h4>
-<p><code>KEY,COUNTRY_CLUB_NAME,ADDRESS,CHECKBIT,DUPLICATE0,VALIDATION_CRITERIA0
+}
+```
+
+#### Output
+```
+KEY,COUNTRY_CLUB_NAME,ADDRESS,CHECKBIT,DUPLICATE0,VALIDATION_CRITERIA0
 GCC344,Kooyonga Golf Club,"165 Greenhill Rd, Glenelg SA 5045, Australia",True,Duplicate [2],['ADDRESS | DUPLICATE']
 GCC352,The Australian Golf Club Dose Peninsula,"282 Nepean Hwy, Dromana VIC 3931, Australia",False,Duplicate [1],['ADDRESS | DUPLICATE']
 GCC357,Joondalup Resort Golf Course,"30 Guilderton Rd, Joondalup WA 6027, Australia",False,Duplicate [1],['ADDRESS | DUPLICATE']
 GCC418,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",True,Duplicate [2],['ADDRESS | DUPLICATE']
-GCC432,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",False,Duplicate [2],['ADDRESS | DUPLICATE']</code></p>
-<h4>Validation Type: UDF</h4>
-<p><code>{ 
-  "target_column": "STATUS",
+GCC432,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",False,Duplicate [2],['ADDRESS | DUPLICATE']
+```
+
+### Validation Type: UDF
+```
+{
+  "target_column": "ADDRESS",
   "validation_type": "UDF",
   "validation_rule": [{
-      "udf": "lib/my_udf.py"
+      "udf": "udf/udf_tester_address.py"
   }]
-}</code></p>
-<h2>DeltaChecker</h2>
-<p>Horizontal Reconciliation: "Comparing data between two different systems or datasets that represent the same information that involves comparing corresponding data points across the systems to ensure they match or identify discrepancies."</p>
-<h3>DeltaCheck()</h3>
-<p>perform comparison and profiling for multiple columns and rows</p>
-<p>```commandline
-python hrecon.py --function='DeltaCheck' --source_filepath=None --target_filepath=None --output_filepath=None --pattern=None)</p>
-<h1>example</h1>
-<p>deltaCheck = DeltaCheck(file_datapath=file_datapath, patterns=patterns)
-source_data = pd.read_csv('golf_cc_address1.csv')
-target_data = pd.read_csv('golf_cc_address2.csv')
-columns_to_compare = ['KEY', 'ADDRESS', 'STATE']
-key_to_join = 'KEY'
-deltaCheck.compare_multiple_columns(source=source_data, target=target_data, columns_to_compare=columns_to_compare, key_to_join=key_to_join)
-```</p>
-<h4>Output</h4>
-<p><code>KEY,COUNTRY_CLUB_NAME_DF1,COUNTRY_CLUB_NAME_DF2,ADDRESS_DF1,ADDRESS_DF2,CHECKBIT_DF1,CHECKBIT_DF2
+}
+```
+
+
+#### UDF sample (udf_tester_address.py)
+```
+def my_udf(udf_input):    
+    from address_engine import GoogleMaps, BingMaps, NominatimGeocoder, AusPost
+    CGoogleMaps = GoogleMaps(api_key=GOOGLE_MAPS_API_KEY, base_url=GOOGLE_MAPS_BASE_URL)
+    address = udf_input
+    suggestion_result_api, suggested_address_from_api, suggested_coordinates_from_api, place_id_from_api, address_components_from_api = CGoogleMaps.suggest_address(address)
+    
+    ret = f"suggested:{suggested_address_from_api}"    
+    print (ret)    
+    return ret
+```
+
+#### Output
+```
+KEY,COUNTRY_CLUB_NAME,ADDRESS,CHECKBIT,UDF0,VALIDATION_CRITERIA0
+GCC104,Royal Fremantle Golf Club,"271 Carrington St, Fremantle TBD 6160, Australia",True,"UDF Result: ('suggested:271 Carrington St, Beaconsfield WA 6162, Australia', True)",ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}
+GCC107,Lake Karrinyup Country Club,"400 Koala Rd, Karrinyup WA 6018, Australia",True,"UDF Result: ('suggested:Karrinyup WA 6018, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
+GCC116,North Sydney Golf Club,"259 Pacific Hwy, South Sydney NSW 2154, Australia",True,"UDF Result: ('suggested:259 Pacific Hwy, North Sydney NSW 2060, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
+```
+
+#### UDF sample in R (udf_gminer.R)
+```
+my_udf <- function (udf_input, tagname=NULL){
+  symbol_in_portfolio <- "KS11|AORD"
+  udf_output <- udf_input %>%
+    dplyr::select (Date, Symbol, Close, RSI, MA_SIG, RSI_SIG, "MA Golden Cross"=MAGX, Return) %>%
+    dplyr::filter(Symbol != "APPL") %>%
+    dplyr::mutate(Prev = lag(Close, order_by = c(Symbol)),
+                  Next = lead(Close, order_by = c(Symbol)),
+                  Change = (Close - lag(Close, order_by = c(Symbol)))
+    ) %>%
+    dplyr::mutate(
+      Date = as.POSIXct.Date(Date),
+      MA_SIG = factor(MA_SIG, levels = c("Bullish", "Bearish", "No"), labels = c("Bullish", "Bearish", "Neural")),
+      RSI_SIG = dplyr::case_when (RSI_SIG == "RSI_Up" ~ "Bullish",
+                                  RSI_SIG == "RSI_Down" ~ "Bearish",
+                                  RSI_SIG == "No" ~ "Neural",
+                                  TRUE  ~ NA_character_),
+      Symbol = stringr::str_replace(Symbol, "[^[A-Za-z]]", ""),
+      Year = lubridate::year(Date),
+      Month = lubridate::month(Date),
+      Day = lubridate::day(Date),
+      "In-Portfolio" = stringr::str_extract(Symbol, symbol_in_portfolio)) %>%
+    dplyr::filter (between (map_dbl (Return, min), -10, 10)) %>%
+    dplyr::distinct(Date, Symbol, .keep_all = TRUE) %>%
+    arrange (Date, Symbol) 
+  return (udf_output)
+}
+```
+
+
+## 2. DeltaCheck
+This feature allows users to compare two datasets (such as current and previous data) and detect any differences that deviate from the normal distribution and standard deviation. By leveraging this functionality, users can effectively identify discrepancies in their data.
+![img.png](docs/delta_check.png)
+### DeltaCheck()
+perform comparison and profiling for multiple columns and rows
+
+```commandline
+$ python delta_check.py --source_data_filepath = 'golf_cc_address1.csv' --target_data_filepath = 'golf_cc_address2.csv' --columns_to_compare ='['KEY', 'ADDRESS', 'STATE']', --key_to_join = 'KEY'
+
+# example
+deltaCheck=DeltaCheck(source_data_filepath=source_data_filepath,
+                target_data_filepath=target_data_filepath,
+                data_source_type=data_source_type,
+                columns_to_compare=columns_to_compare,
+                key_to_join=key_to_join)
+all_mismatched, comparison_report = deltaCheck.main()
+print(comparison_report)
+```
+
+#### Output 
+```
+KEY,COUNTRY_CLUB_NAME_DF1,COUNTRY_CLUB_NAME_DF2,ADDRESS_DF1,ADDRESS_DF2,CHECKBIT_DF1,CHECKBIT_DF2
 GCC107,Lake Karrinyup Country Club,Lake Karrinyup Country Club,"400 Karrinyup Rd, Karrinyup WA 6018, Australia","400 Karrinyup Road, Karrinyup WA 6018, Australia",True,True
 GCC116,North Sydney Golf Club,Nooth Sydney Golf Club,"259 Pacific Hwy, North Sydney NSW 2060, Australia","259 Pacific Hwy, Nooth Sydney NSW 2060, Australia",True,True
 GCC137,Sorrento Golf Club,Sorrento Golf Club,"112 Hotham Rd, Sorrento VIC 3934, Australia","112 Hotham Road, Sorrento VIC 3934, Australia",True,True
 GCC190,Yarra Yarra Golf Club,Yarra Yarra Golf Club,"421 Lower Heidelberg Rd, Heidelberg Heights VIC 3081, Australia","421 Lower Heidelberg Road, Heidelberg Heights VIC 3081, Australia",True,True
-GCC192,Cape Schanck Golf Course,Cape Schanck Golf Course,"130 Cape Schanck Rd, Cape Schanck VIC 3926, Australia","130 Cape Schanck Road, Cape Schanck VIC 3926, Australia",False,False</code></p>
-<h3>ColumnMatcher()</h3>
-<p>find different for same layouts between two data sets for single column
+GCC192,Cape Schanck Golf Course,Cape Schanck Golf Course,"130 Cape Schanck Rd, Cape Schanck VIC 3926, Australia","130 Cape Schanck Road, Cape Schanck VIC 3926, Australia",False,False
+```
+
+``` 
+DataFrame Summary (using datacompy libarary)
+-----------------
+
+  DataFrame  Columns  Rows
+0       df1       25    31
+1       df2       25    31
+
+Column Summary
+--------------
+
+Number of columns in common: 25
+Number of columns in df1 but not in df2: 0
+Number of columns in df2 but not in df1: 0
+
+Row Summary
+-----------
+
+Matched on: symbol
+Any duplicates on match values: No
+Absolute Tolerance: 0.001
+Relative Tolerance: 0.001
+Number of rows in common: 28
+Number of rows in df1 but not in df2: 3
+Number of rows in df2 but not in df1: 3
+
+Number of rows with some compared columns unequal: 28
+Number of rows with all compared columns equal: 0
+
+Column Comparison
+-----------------
+
+Number of columns compared with some values unequal: 44
+Number of columns compared with all values equal: 6
+Total number of values which compare unequal: 1,074
+
+Columns with Unequal Values or Types
+------------------------------------
+
+                    Column df1 dtype df2 dtype  # Unequal      Max Diff  # Null Diff
+29                adjusted   float64   float64         28  1.037100e+04            0
+7                 adjusted   float64   float64         28  1.037100e+04            0
+```
+
+### ColumnMatcher()
+find different for same layouts between two data sets for single column
 ```commandline
-python hrecon.py --function='ColumnMatcher' --source_filepath=None --target_filepath=None --output_filepath=None --pattern=None)</p>
-<h1>example</h1>
-<p>columnMatcher = ColumnMatcher()
-columnMatcher.run_csv(source_filepath=source_filepath, 
-    arget_filepath=target_filepath, 
-    column_to_join=column_to_join, 
-    column_to_sort=column_to_sort,
-    delimeter=delimeter)</p>
-<p>```</p>
-<h4>Input Data: stock_price.csv</h4>
-<p><code>source/world-indices-yahoo-20230608.csv 
-target/world-indices-yahoo-20230608.csv</code></p>
-<h4>Output</h4>
-<p><img alt="img.png" src="docs/df_diff.png" /></p>
-<h2>VRecon</h2>
-<p>Vertical Reconciliation: "Comparing corresponding data points across different sources or systems. It's essentially a vertical comparison, as it's looking at the same data points across different rows (hence, "vertical") of the specific data."</p>
-<h2>Usage: DProfile()</h2>
-<p>Data profiling: "Performing a series of processes involves examining, analyzing, and summarizing data to gain a high-level understanding. This process helps uncover data quality issues, risks, and trends, providing critical insights that companies can use to their advantage</p>
-<h2>Deployments Options</h2>
-<ul>
-<li>FastAPI/Flask Web Services</li>
-<li>REST API services in Docker/Kubernetes container</li>
-<li>Tibco Kafra Topics</li>
-<li>Python functions in Azure/AWS</li>
-<li>Python function in Snowflake</li>
-</ul>
-<h2>Considerations</h2>
-<ul>
-<li>to be updated </li>
-</ul>
+$ python column_matcher.py --source_data_filepath='input/gminer_24jan.csv' --target_data_filepath='input/gminer_24feb.csv'  --column_to_sort='symbol' --columns_to_compare='symbol,namel'
+
+# example
+columnMatcher = ColumnMatcher(source_data_filepath='input/gminer_24jan.csv',
+                                  target_data_filepath='input/gminer_24feb.csv',    
+                                  columns_to_compare=['name', 'symbol'],
+                                  column_to_sort='name',
+                                  data_source_type='CSV',
+                                  delimiter=',',
+                                  output_filepath='output')
+ret = columnMatcher.main()
+print (ret)    
+```
+#### Input Data: GMiner Trading Data 
+```
+Source: 'input/gminer_24jan.csv'
+Target: 'input/gminer_24feb.csv' 
+```
+#### Output
+![img.png](docs/df_diff.png)
+
+```
+Mismatches in column NAME:
+Row 2: BSE SENSEX vs. CAC 40 (dissimilarity: 0.88)
+Row 3: CAC 40 vs. Cboe UK 100 (dissimilarity: 0.65)
+Row 4: Cboe UK 100 vs. DAX PERFORMANCE-INDEX (dissimilarity: 0.94)
+Row 5: DAX PERFORMANCE-INDEX vs. Dow (dissimilarity: 0.92)
+...
+Mismatches in column SYMBOL:
+Row 2: ^BSESN vs. ^FCHI (dissimilarity: 0.88)
+Row 3: ^FCHI vs. ^BUK100P (dissimilarity: 0.65)
+Row 4: ^BUK100P vs. ^GDAXI (dissimilarity: 0.94)
+```
+
+## 3. VRecon and Lineage 
+Vertical Reconciliation: "Comparing corresponding data points across different sources or systems. It's essentially a vertical comparison, as it's looking at the same data points across different rows (hence, "vertical") of the specific data."
+```commandline
+python hrecon.py --function='VerticalRecon' --source_filepath=None --target_filepath=None --output_filepath=None)
+
+# example
+vRecon = VerticalRecon()
+vRecon.run()
+```
+
+## 4. Usage: DProfile()
+Data profiling: "Performing a series of processes involves examining, analyzing, and summarizing data to gain a high-level understanding. This process helps uncover data quality issues, risks, and trends, providing critical insights that companies can use to their advantage
+
+
+
+## Deployments Options
+- Streamlit/FastAPI/Flask Web Services
+- REST API services in Docker/Kubernetes container
+- Tibco Kafra Topics
+- Python function in Snowflake
+- Python function in Azure/AWS
+- Python function in SQL Server
+
+## Considerations
+- UDF in Java
+- Master metadata
+- Data visualization
+
+
+
+## Appendix
+### Key-Only-Result (Excluse all columns except Key column)
+#### Input with key_to_split arguments (e.g. --key_to_split='DATE, SYMBOL' )
+```commandline
+CLI: 
+python value_check.py --data_filepath='input/my_watchlist.csv' --metadata_filepath='input/my_watchlist.json' --key_to_split='DATE, SYMBOL, NAMED'
+
+# Moddule
+valueCheck = ValueCheck(data_filepath="my_watchlist.csv", metadata_filepath="my_watchlist.json",  key_to_split=['DATE', 'SYMBOL', 'NAME')
+print (valueCheck.run())
+```
+#### Output: Key and results only (the rest columns are excluded)
+```
+DATE,SYMBOL,NAME,ENUM0,VALIDATION_CRITERIA0,LENGTH1,VALIDATION_CRITERIA1
+27/01/2022,LYC.AX,Lynas Rare EARTHS Ltd,Within allowed_values,"MA_SIGNAL | ENUM | {'allowed_values': ['Bullish', 'Bearish', 'Neutral']}",Within Length,"NAME | LENGTH | {'min': 15, 'max': 25}"
+27/01/2022,PLS.AX,TBD,Within allowed_values,"[""MA_SIGNAL | ENUM | {'allowed_values': ['Bullish', 'Bearish', 'Neutral']}""]",Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
+27/01/2022,TLX.AX,Telix Pharmaceuticals Limited,Within allowed_values,"[""MA_SIGNAL | ENUM | {'allowed_values': ['Bullish', 'Bearish', 'Neutral']}""]",Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
+```
+
+### Call in R
+#### ValueCheck
+```
+library(reticulate)
+pd <- import("pandas")
+
+data_filepath <- paste0(input_data_dirpath, input$ui_data_filepath)
+metadata_filepath <- paste0(input_data_dirpath, input$ui_metadata_filepath)
+
+# x= py_run_string("import sys; sys.argv=['value_check.py', '--data_filepath=input/stock_price.csv', '--metadata_filepath=input/stock_price.json']; exec(open('value_check.py').read())")
+
+python_cli_expression <- paste0("import sys; sys.argv=['value_check.py', '--data_filepath=", data_filepath, "', ", 
+                                "'--metadata_filepath=", metadata_filepath, "', ",
+                                "]; exec(open('value_check.py').read())" 
+                                )
+x= py_run_string (python_cli_expression)
+df  <- py_to_r(x)
+ret <-pd$DataFrame(x$ret)
+write.csv(ret, "output/output_value_check.csv", row.names = FALSE, quote = FALSE)
+```
+
+#### DeltaCheck
+```
+library(reticulate)
+pd <- import("pandas")
+source_data_filepath <- paste0(source_data_dirpath, input$ui_source_data_filepath) 
+target_data_filepath <- paste0(target_data_dirpath, input$ui_target_data_filepath) 
+columns_to_compare <- 'symbol name ma_signal'
+key_to_join <- "symbol"
+
+# python_command <- "import sys; sys.argv=['delta_check.py', '--source_data_filepath=input/gminer_24jan.csv', '--target_data_filepath=input/gminer_24feb.csv', '--columns_to_compare=symbol name ma_signal', '--key_to_join=symbol']; exec(open('delta_check.py').read())"
+python_cli_expression <- paste0("import sys; sys.argv=['delta_check.py', '--source_data_filepath=", source_data_filepath, "', ", 
+                                "'--target_data_filepath=", target_data_filepath, "', ",
+                                "'--columns_to_compare=", columns_to_compare, "', ",
+                                "'--key_to_join=", key_to_join, "'", 
+                                "]; exec(open('delta_check.py').read())"                                
+                                )
+
+x <- py_run_string(python_cli_expression)
+print (x)
+df  <- py_to_r(x)
+comparison_report <- df$comparison_report
+all_mismatched <-pd$DataFrame(x$all_mismatched)
+write.csv(all_mismatched, "output/output_delta_check_all_mismatched.csv", row.names = FALSE, quote = FALSE)   #
+```
