@@ -1,7 +1,7 @@
 # DataQC - Data Quality Check Library
 
 <!-- TOC -->
-* [DataQC - Ensured Data Quality Check Library](#dataqc---ensured-data-quality-check-library)
+* [DataQC - Data Quality Check Library](#dataqc---data-quality-check-library)
   * [Executive Summary](#executive-summary)
   * [Introduction: Key Objectives](#introduction-key-objectives)
     * [Checkpoint 1: Value Check (VCheck)](#checkpoint-1-value-check-vcheck)
@@ -24,6 +24,8 @@
     * [Validation Type: EMAIL](#validation-type-email)
     * [Validation Type: UNIQUE](#validation-type-unique)
     * [Validation Type: UDF](#validation-type-udf)
+      * [UDF sample (udf_tester_address.py)](#udf-sample-udftesteraddresspy)
+      * [UDF sample in R (udf_gminer.R)](#udf-sample-in-r-udfgminerr)
   * [2. DeltaCheck](#2-deltacheck)
     * [DeltaCheck()](#deltacheck)
     * [ColumnMatcher()](#columnmatcher)
@@ -36,8 +38,8 @@
       * [Input with key_to_split arguments (e.g. --key_to_split='DATE, SYMBOL' )](#input-with-keytosplit-arguments-eg---keytosplitdate-symbol-)
       * [Output: Key and results only (the rest columns are excluded)](#output-key-and-results-only-the-rest-columns-are-excluded)
     * [Call in R](#call-in-r)
-      * [ValueCheck](#valuecheck)
-      * [DeltaCheck](#deltacheck-1)
+    * [Call in Java](#call-in-java)
+    * [Call in SQL Server](#call-in-sql-server)
 <!-- TOC -->
 
 
@@ -71,9 +73,10 @@ VCheck enable to check the value in the specific column using **vcheck()** in **
 
 ### Basic
 ```commandline
-python dataqc.py --function='vcheck'  --data='data_source' --metadata='/input/metadata_source.json'
+python dataqc.py --function='vcheck'  --data='data_source' --metadata='/input/metadata_source.json --key_to_split'
 
 # Sample: CSV
+python value_check.py --data_filepath='input/my_watchlist.csv' --metadata_filepath='input/my_watchlist.json' --key_to_split='DATE, SYMBOL'
 valueCheck = ValueCheck(data_filepath="stock_price.csv", metadata_filepath="stock_price.json", data_source_type="csv")
 print (valueCheck.run())
 
@@ -609,4 +612,85 @@ df  <- py_to_r(x)
 comparison_report <- df$comparison_report
 all_mismatched <-pd$DataFrame(x$all_mismatched)
 write.csv(all_mismatched, "output/output_delta_check_all_mismatched.csv", row.names = FALSE, quote = FALSE)   #
+```
+
+
+### Call in Java
+#### ValueCheck
+```commandline
+import org.python.util.jython;
+public class Main {
+    public static void main(String[] args) {
+        String scriptPath = "value_check.py";
+        String[] pythonArgs = {"--data_filepath=input/stock_price.csv", "--metadata_filepath=input/stock_price.json"};
+
+        try {
+            jython.Main.execfile(scriptPath, pythonArgs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+#### DeltaCheck
+```commandline
+import com.jnaerator.pyobject.Py;
+import com.jnaerator.pyobject.PyList;
+
+public class Main {
+    public static void main(String[] args) {
+        Py script = Py.getInstance().getModule("delta_check.py");
+        PyList argsList = Py.newList();
+        argsList.add(source_data_filepath);
+        argsList.add(target_data_filepath);
+
+        Py result = script.callAttr("main", argsList);
+        // ... process the result from the Python script
+    }
+}
+```
+
+
+### Call in SQL Server
+#### ValueCheck
+```commandline
+
+EXEC sp_configure 'external scripts enabled', 1;
+RECONFIGURE;
+
+CREATE PROCEDURE dbo.RunPythonScriptValueCheck
+@DataFilePath NVARCHAR(MAX),
+@MetadataFilePath NVARCHAR(MAX),
+@KeyToSplit NVARCHAR(MAX)
+AS
+BEGIN
+    DECLARE @cmd NVARCHAR(MAX);
+    DECLARE @result NVARCHAR(MAX);
+
+    -- Assuming ValueCheck is defined within the embedded script:
+
+    SET @cmd = N'
+        EXEC sp_execute_external_script
+            @language = N''Python'',
+            @script = N''
+                import pandas as pd
+
+                # Access data using actual file paths or input parameters
+                # (replace with appropriate logic based on your requirements)
+                data = pd.read_csv('path/to/data.csv')
+                metadata = pd.read_json('path/to/metadata.json')
+
+                # Call ValueCheck with actual data and arguments
+                result = ValueCheck(data, metadata, key_to_split=''' + @KeyToSplit + ''')
+
+                # Handle and return the result (replace with appropriate logic)
+                print(f"Result: {result}")
+            '',
+            @input_data_1 = N'';
+    ';
+
+    EXEC sp_executesql @cmd;
+
+    -- Process the result (e.g., SELECT @result)
+END;
 ```
