@@ -1,4 +1,4 @@
-# DataQC - Ensured Data Quality Check Library
+# DataQC - Data Quality Check Library
 
 <!-- TOC -->
 * [DataQC - Ensured Data Quality Check Library](#dataqc---ensured-data-quality-check-library)
@@ -8,10 +8,10 @@
     * [Checkpoint 2: Delta Check (DCheck)](#checkpoint-2-delta-check-dcheck)
     * [Checkpoint 3: Vertical and Horizontal Reconciliation (VRecon, HRecon)](#checkpoint-3-vertical-and-horizontal-reconciliation-vrecon-hrecon)
   * [Key Capabilities and Benefits](#key-capabilities-and-benefits)
-  * [Get started:](#get-started)
-  * [Project philosophy](#project-philosophy)
   * [1. ValueCheck](#1-valuecheck)
     * [Basic](#basic)
+      * [Input Data: stock_price.csv](#input-data-stockpricecsv-)
+      * [Input Metadata: stock_price.json](#input-metadata-stockpricejson-)
     * [Validation Type: RANGE](#validation-type-range)
     * [Validation Type: THRESHOLD](#validation-type-threshold)
     * [Validation Type: TIER](#validation-type-tier)
@@ -31,6 +31,13 @@
   * [4. Usage: DProfile()](#4-usage-dprofile)
   * [Deployments Options](#deployments-options)
   * [Considerations](#considerations)
+  * [Appendix](#appendix)
+    * [Key-Only-Result (Excluse all columns except Key column)](#key-only-result-excluse-all-columns-except-key-column)
+      * [Input with key_to_split arguments (e.g. --key_to_split='DATE, SYMBOL' )](#input-with-keytosplit-arguments-eg---keytosplitdate-symbol-)
+      * [Output: Key and results only (the rest columns are excluded)](#output-key-and-results-only-the-rest-columns-are-excluded)
+    * [Call in R](#call-in-r)
+      * [ValueCheck](#valuecheck)
+      * [DeltaCheck](#deltacheck-1)
 <!-- TOC -->
 
 
@@ -312,7 +319,7 @@ This validation type can be used to validate the format or pattern of data in a 
 }
 ```
 
-#### Validation Type: UNIQUE
+### Validation Type: UNIQUE
 ```
 {  
   "target_column": "ADDRESS",
@@ -335,7 +342,7 @@ GCC418,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",T
 GCC432,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",False,Duplicate [2],['ADDRESS | DUPLICATE']
 ```
 
-#### Validation Type: UDF
+### Validation Type: UDF
 ```
 {
   "target_column": "ADDRESS",
@@ -347,8 +354,7 @@ GCC432,The Grange Golf Club,"220 The Grange Rd, The Grange SA 5022, Australia",F
 ```
 
 
-####
-UDF sample (udf_tester_address.py)
+#### UDF sample (udf_tester_address.py)
 ```
 def my_udf(udf_input):    
     from address_engine import GoogleMaps, BingMaps, NominatimGeocoder, AusPost
@@ -360,8 +366,6 @@ def my_udf(udf_input):
     print (ret)    
     return ret
 ```
-####
-
 
 #### Output
 ```
@@ -371,7 +375,7 @@ GCC107,Lake Karrinyup Country Club,"400 Koala Rd, Karrinyup WA 6018, Australia",
 GCC116,North Sydney Golf Club,"259 Pacific Hwy, South Sydney NSW 2154, Australia",True,"UDF Result: ('suggested:259 Pacific Hwy, North Sydney NSW 2060, Australia', True)","[""ADDRESS | UDF | {'udf': 'core/udf_tester_address.py'}""]"
 ```
 
-UDF sample in R (udf_gminer.R)
+#### UDF sample in R (udf_gminer.R)
 ```
 my_udf <- function (udf_input, tagname=NULL){
   symbol_in_portfolio <- "KS11|AORD"
@@ -400,8 +404,6 @@ my_udf <- function (udf_input, tagname=NULL){
   return (udf_output)
 }
 ```
-####
-
 
 
 ## 2. DeltaCheck
@@ -433,29 +435,86 @@ GCC190,Yarra Yarra Golf Club,Yarra Yarra Golf Club,"421 Lower Heidelberg Rd, Hei
 GCC192,Cape Schanck Golf Course,Cape Schanck Golf Course,"130 Cape Schanck Rd, Cape Schanck VIC 3926, Australia","130 Cape Schanck Road, Cape Schanck VIC 3926, Australia",False,False
 ```
 
+``` 
+DataFrame Summary (using datacompy libarary)
+-----------------
+
+  DataFrame  Columns  Rows
+0       df1       25    31
+1       df2       25    31
+
+Column Summary
+--------------
+
+Number of columns in common: 25
+Number of columns in df1 but not in df2: 0
+Number of columns in df2 but not in df1: 0
+
+Row Summary
+-----------
+
+Matched on: symbol
+Any duplicates on match values: No
+Absolute Tolerance: 0.001
+Relative Tolerance: 0.001
+Number of rows in common: 28
+Number of rows in df1 but not in df2: 3
+Number of rows in df2 but not in df1: 3
+
+Number of rows with some compared columns unequal: 28
+Number of rows with all compared columns equal: 0
+
+Column Comparison
+-----------------
+
+Number of columns compared with some values unequal: 44
+Number of columns compared with all values equal: 6
+Total number of values which compare unequal: 1,074
+
+Columns with Unequal Values or Types
+------------------------------------
+
+                    Column df1 dtype df2 dtype  # Unequal      Max Diff  # Null Diff
+29                adjusted   float64   float64         28  1.037100e+04            0
+7                 adjusted   float64   float64         28  1.037100e+04            0
+```
 
 ### ColumnMatcher()
 find different for same layouts between two data sets for single column
 ```commandline
-$ python column_matcher.py --source_data_filepath='input/gminer_24jan.csv' --target_data_filepath='input/gminer_24feb.csv'  --column_to_sort='symbol' --columns_to_compare='symbol,name,ma_signal'
-
+$ python column_matcher.py --source_data_filepath='input/gminer_24jan.csv' --target_data_filepath='input/gminer_24feb.csv'  --column_to_sort='symbol' --columns_to_compare='symbol,namel'
 
 # example
-columnMatcher = ColumnMatcher(source_data_filepath=source_data_filepath,
-                                  target_data_filepath=target_data_filepath,
-                                  columns_to_compare=columns_to_compare,
-                                  column_to_sort=column_to_sort,
-                                  data_source_type=data_source_type,
-                                  delimiter=delimiter,
-                                  output_filepath=output_filepath)   
+columnMatcher = ColumnMatcher(source_data_filepath='input/gminer_24jan.csv',
+                                  target_data_filepath='input/gminer_24feb.csv',    
+                                  columns_to_compare=['name', 'symbol'],
+                                  column_to_sort='name',
+                                  data_source_type='CSV',
+                                  delimiter=',',
+                                  output_filepath='output')
+ret = columnMatcher.main()
+print (ret)    
 ```
-#### Input Data: stock_price.csv 
+#### Input Data: GMiner Trading Data 
 ```
-source/world-indices-yahoo-20230608.csv 
-target/world-indices-yahoo-20230608.csv 
+Source: 'input/gminer_24jan.csv'
+Target: 'input/gminer_24feb.csv' 
 ```
 #### Output
 ![img.png](docs/df_diff.png)
+
+```
+Mismatches in column NAME:
+Row 2: BSE SENSEX vs. CAC 40 (dissimilarity: 0.88)
+Row 3: CAC 40 vs. Cboe UK 100 (dissimilarity: 0.65)
+Row 4: Cboe UK 100 vs. DAX PERFORMANCE-INDEX (dissimilarity: 0.94)
+Row 5: DAX PERFORMANCE-INDEX vs. Dow (dissimilarity: 0.92)
+...
+Mismatches in column SYMBOL:
+Row 2: ^BSESN vs. ^FCHI (dissimilarity: 0.88)
+Row 3: ^FCHI vs. ^BUK100P (dissimilarity: 0.65)
+Row 4: ^BUK100P vs. ^GDAXI (dissimilarity: 0.94)
+```
 
 ## 3. VRecon and Lineage 
 Vertical Reconciliation: "Comparing corresponding data points across different sources or systems. It's essentially a vertical comparison, as it's looking at the same data points across different rows (hence, "vertical") of the specific data."
@@ -484,5 +543,70 @@ Data profiling: "Performing a series of processes involves examining, analyzing,
 - UDF in Java
 - Master metadata
 - Data visualization
-- Exception handling
 
+
+
+## Appendix
+### Key-Only-Result (Excluse all columns except Key column)
+#### Input with key_to_split arguments (e.g. --key_to_split='DATE, SYMBOL' )
+```commandline
+CLI: 
+python value_check.py --data_filepath='input/my_watchlist.csv' --metadata_filepath='input/my_watchlist.json' --key_to_split='DATE, SYMBOL, NAMED'
+
+# Moddule
+valueCheck = ValueCheck(data_filepath="my_watchlist.csv", metadata_filepath="my_watchlist.json",  key_to_split=['DATE', 'SYMBOL', 'NAME')
+print (valueCheck.run())
+```
+#### Output: Key and results only (the rest columns are excluded)
+```
+DATE,SYMBOL,NAME,ENUM0,VALIDATION_CRITERIA0,LENGTH1,VALIDATION_CRITERIA1
+27/01/2022,LYC.AX,Lynas Rare EARTHS Ltd,Within allowed_values,"MA_SIGNAL | ENUM | {'allowed_values': ['Bullish', 'Bearish', 'Neutral']}",Within Length,"NAME | LENGTH | {'min': 15, 'max': 25}"
+27/01/2022,PLS.AX,TBD,Within allowed_values,"[""MA_SIGNAL | ENUM | {'allowed_values': ['Bullish', 'Bearish', 'Neutral']}""]",Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
+27/01/2022,TLX.AX,Telix Pharmaceuticals Limited,Within allowed_values,"[""MA_SIGNAL | ENUM | {'allowed_values': ['Bullish', 'Bearish', 'Neutral']}""]",Out of Length,"[""NAME | LENGTH | {'min': 15, 'max': 25}""]"
+```
+
+### Call in R
+#### ValueCheck
+```
+library(reticulate)
+pd <- import("pandas")
+
+data_filepath <- paste0(input_data_dirpath, input$ui_data_filepath)
+metadata_filepath <- paste0(input_data_dirpath, input$ui_metadata_filepath)
+
+# x= py_run_string("import sys; sys.argv=['value_check.py', '--data_filepath=input/stock_price.csv', '--metadata_filepath=input/stock_price.json']; exec(open('value_check.py').read())")
+
+python_cli_expression <- paste0("import sys; sys.argv=['value_check.py', '--data_filepath=", data_filepath, "', ", 
+                                "'--metadata_filepath=", metadata_filepath, "', ",
+                                "]; exec(open('value_check.py').read())" 
+                                )
+x= py_run_string (python_cli_expression)
+df  <- py_to_r(x)
+ret <-pd$DataFrame(x$ret)
+write.csv(ret, "output/output_value_check.csv", row.names = FALSE, quote = FALSE)
+```
+
+#### DeltaCheck
+```
+library(reticulate)
+pd <- import("pandas")
+source_data_filepath <- paste0(source_data_dirpath, input$ui_source_data_filepath) 
+target_data_filepath <- paste0(target_data_dirpath, input$ui_target_data_filepath) 
+columns_to_compare <- 'symbol name ma_signal'
+key_to_join <- "symbol"
+
+# python_command <- "import sys; sys.argv=['delta_check.py', '--source_data_filepath=input/gminer_24jan.csv', '--target_data_filepath=input/gminer_24feb.csv', '--columns_to_compare=symbol name ma_signal', '--key_to_join=symbol']; exec(open('delta_check.py').read())"
+python_cli_expression <- paste0("import sys; sys.argv=['delta_check.py', '--source_data_filepath=", source_data_filepath, "', ", 
+                                "'--target_data_filepath=", target_data_filepath, "', ",
+                                "'--columns_to_compare=", columns_to_compare, "', ",
+                                "'--key_to_join=", key_to_join, "'", 
+                                "]; exec(open('delta_check.py').read())"                                
+                                )
+
+x <- py_run_string(python_cli_expression)
+print (x)
+df  <- py_to_r(x)
+comparison_report <- df$comparison_report
+all_mismatched <-pd$DataFrame(x$all_mismatched)
+write.csv(all_mismatched, "output/output_delta_check_all_mismatched.csv", row.names = FALSE, quote = FALSE)   #
+```
